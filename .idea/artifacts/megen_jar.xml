@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="megen:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/megen_jar</output-path>
+    <root id="archive" name="megen.jar">
+      <element id="module-output" name="megen" />
+    </root>
+  </artifact>
+</component>
