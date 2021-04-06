@@ -4,13 +4,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class OrderMinPanel extends JPanel {
+public class OrderMaxPanel extends JPanel {
 
     int success = 0;
     int fail = 0;
@@ -62,7 +64,7 @@ public class OrderMinPanel extends JPanel {
 
 
 
-    public OrderMinPanel() {
+    public OrderMaxPanel() {
 
         //Wichtig für die eindeutige Dateibenennung
         Date date = Calendar.getInstance().getTime();
@@ -72,7 +74,7 @@ public class OrderMinPanel extends JPanel {
         ordnerSuchen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                chooser.setCurrentDirectory(new java.io.File("."));
+                chooser.setCurrentDirectory(new File("."));
                 chooser.setDialogTitle(choosertitle);
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 chooser.setAcceptAllFileFilterUsed(false); // Schalltet "Alle Ordner" Option ab

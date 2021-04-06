@@ -8,13 +8,35 @@ import java.awt.event.ActionListener;
 public class MainPanel extends JPanel {
 
     JButton minimalOrder = new JButton();
-    GridBagLayout gbll = new GridBagLayout();
+    JButton maximalOrder = new JButton();
+    JButton test = new JButton("Test");
+    GridBagLayout gbl = new GridBagLayout();
+
+
+
+
 
     public MainPanel (){
 
-        this.setLayout(gbll);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridy = 0;
+        gbc.weighty = 1;
+
+        this.setLayout(gbl);
         minimalOrder.setText("Minimalorder erstellen");
-        this.add(minimalOrder);
+        maximalOrder.setText("Maximalorder erstellen");
+
+        this.add(minimalOrder, gbc);
+
+        gbc.gridy = 1;
+        gbc.weighty = 0.1;
+
+        this.add(maximalOrder, gbc);
+
+
+
         this.setBackground(Color.lightGray);
 
     }

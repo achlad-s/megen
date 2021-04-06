@@ -23,7 +23,7 @@ public class Main {
 
      //Erstellt das Fenster, in dem das Programm gezeigt wird
      Frame frame = new Frame();
-     //Windowlistener nötig für die Suche des Ablageordners
+     //Windowlistener nötig für die Suche des Ablageordners im System
         frame.addWindowListener(
                 new WindowAdapter() {
                     public void windowClosing(WindowEvent e) {
