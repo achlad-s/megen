@@ -1,6 +1,8 @@
 package App;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,14 +33,14 @@ public class OrderMinPanel extends JPanel {
     JLabel sellerNo = new JLabel("Sellerno.:");
     JLabel plantCode = new JLabel("Werkscode");
     JLabel unloadingPoint = new JLabel("Abladestelle");
-    JLabel unitOfMeasure = new JLabel("Maßeinheit");
+    JLabel unitOfMeasure = new JLabel("Maßeinheit(EA / KGM / MTR)");
     JLabel dateiCount = new JLabel("Anzahl Dateien");
     JLabel positionenCount = new JLabel("Anzahl Positionen:");
     JLabel bestellmenge = new JLabel("Bestellmenge/Position:");
     JLabel waehrung = new JLabel("Währung:");
-    JLabel lieferung = new JLabel("Lieferung:");
-    JLabel rechnung = new JLabel("Rechnung?");
-    JLabel antwort = new JLabel("Bestellantwort?");
+    JLabel lieferung = new JLabel("Lieferung(DN / DY / BK / SC)");
+    JLabel rechnung = new JLabel("Rechnung(Y / N):");
+    JLabel antwort = new JLabel("Bestellantwort (y / N):");
     JLabel idStart = new JLabel("Startnummer");
     JLabel emptyLabel =new JLabel("");
     JPanel back;
@@ -64,7 +66,45 @@ public class OrderMinPanel extends JPanel {
     JTextField idStartText = new JTextField("1");
 
 
+    public void enableUOMButton(){
+        if (unitOfMeasureText.getText().equals("EA") || unitOfMeasureText.getText().equals("KGM") || unitOfMeasureText.getText().equals("MTR"))
+        {
+            erstellen.setEnabled(true);
+        }
+        else
+        {
+            erstellen.setEnabled(false);
+        }}
 
+    public void enableLieButton(){
+        if (lieferungText.getText().equals("DY") || lieferungText.getText().equals("DN") || lieferungText.getText().equals("BK") || lieferungText.getText().equals("SC"))
+        {
+            erstellen.setEnabled(true);
+        }
+        else
+        {
+            erstellen.setEnabled(false);
+        }}
+
+    public void enableReButton(){
+        if (rechnungText.getText().equals("Y") || rechnungText.getText().equals("N"))
+        {
+            erstellen.setEnabled(true);
+        }
+        else
+        {
+            erstellen.setEnabled(false);
+        }}
+
+    public void enableBaButton(){
+        if (antwortText.getText().equals("Y") || antwortText.getText().equals("N"))
+        {
+            erstellen.setEnabled(true);
+        }
+        else
+        {
+            erstellen.setEnabled(false);
+        }}
 
 
     public OrderMinPanel() {
@@ -167,6 +207,77 @@ public class OrderMinPanel extends JPanel {
 
         erstellen.setText("Minimalorder(s) erstellen");
 
+
+        unitOfMeasureText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableUOMButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableUOMButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableUOMButton();
+            }
+        });
+
+        lieferungText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableLieButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableLieButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableLieButton();
+            }
+        });
+
+        rechnungText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableReButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableReButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableReButton();
+            }
+        });
+
+        antwortText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                enableBaButton();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                enableBaButton();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                enableBaButton();
+            }
+        });
+
+
+
         erstellen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,7 +299,7 @@ public class OrderMinPanel extends JPanel {
                                 success++;
                                 try {
                                     FileWriter myWriter = new FileWriter(sp+"\\SO_ORDERS_"+userKuerzelText.getText()+strToday+counterStr+"_"+strTodayFull+".edi");
-                                    myWriter.write("UNA:+.?'\n");
+                                    myWriter.write("UNA:+.? '\n");
                                     myWriter.write("UNB+UNOC:3+"+mailPartnerText.getText()+"+OSUPPLYON+"+strTodayFull+":"+strHour+"+0000200003'\n");
                                     lineCounter++;
                                     myWriter.write("UNH+1+ORDERS:D:99B:UN'\n");
