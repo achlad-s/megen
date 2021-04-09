@@ -7,6 +7,10 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -14,6 +18,7 @@ public class OrderMinPanel extends JPanel {
 
     int success = 0;
     int fail = 0;
+    int lineCounter = 0;
 
     JButton zurueck = new JButton();
     JButton erstellen = new JButton();
@@ -54,8 +59,8 @@ public class OrderMinPanel extends JPanel {
     JTextField bestellmengeText = new JTextField("1");
     JTextField waehrungText = new JTextField("EUR");
     JTextField lieferungText = new JTextField("DY");
-    JTextField rechnungText = new JTextField("J");
-    JTextField antwortText = new JTextField("J");
+    JTextField rechnungText = new JTextField("Y");
+    JTextField antwortText = new JTextField("Y");
     JTextField idStartText = new JTextField("1");
 
 
@@ -65,9 +70,24 @@ public class OrderMinPanel extends JPanel {
     public OrderMinPanel() {
 
         //Wichtig für die eindeutige Dateibenennung
-        Date date = Calendar.getInstance().getTime();
-        DateFormat dateFormat = new SimpleDateFormat("yyMMdd");
-        String strDate = dateFormat.format(date);
+        // Erstellt Datum heute, gestern und morgen. Erstellt aktuelle Uhrzeit minutengenau.
+        Instant today =  Instant.now();
+        Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
+        Instant tomorrow = Instant.now().plus(1, ChronoUnit.DAYS);
+
+        DateTimeFormatter day = DateTimeFormatter.ofPattern("yyMMdd")
+                .withZone(ZoneId.systemDefault());
+        DateTimeFormatter dayYear = DateTimeFormatter.ofPattern("yyyyMMdd")
+                .withZone(ZoneId.systemDefault());
+        DateTimeFormatter hour = DateTimeFormatter.ofPattern("hhmm")
+                .withZone(ZoneId.systemDefault());
+
+        String strTodayFull = dayYear.format(today);
+        String strToday = day.format(today);
+        String strYesterday = dayYear.format(yesterday);
+        String strTomorrow = dayYear.format(tomorrow);
+
+        String strHour = hour.format(today);
 
         ordnerSuchen.addActionListener(new ActionListener() {
             @Override
@@ -154,11 +174,12 @@ public class OrderMinPanel extends JPanel {
                 try {
                     int id = Integer.parseInt(idStartText.getText());
                     int datCount = Integer.parseInt(dateiCountText.getText());
+                    int posCount = Integer.parseInt(positionenCountText.getText());
                     int ordNumberEnd = id + datCount- 1;
                     int neueId = id + datCount;
                     for (int counter = id; counter <= ordNumberEnd; counter++ ){
                         String counterStr = String.valueOf(counter);
-                        File myObj = new File(sp+"\\"+userKuerzelText.getText()+strDate+counterStr+".edi");
+                        File myObj = new File(sp+"\\SO_ORDERS_"+userKuerzelText.getText()+strToday+counterStr+"_"+strTodayFull+".edi");
                         String path = myObj.getPath();
                         System.out.println("Speicherort: "+myObj.getAbsolutePath());
                         try {
@@ -166,9 +187,62 @@ public class OrderMinPanel extends JPanel {
                                 System.out.println("File created: " + myObj.getName());
                                 success++;
                                 try {
-                                    FileWriter myWriter = new FileWriter(sp+"\\"+userKuerzelText.getText()+strDate+counterStr+".edi");
-                                    myWriter.write("Files in Java might be tricky, but it is fun enough!");
+                                    FileWriter myWriter = new FileWriter(sp+"\\SO_ORDERS_"+userKuerzelText.getText()+strToday+counterStr+"_"+strTodayFull+".edi");
+                                    myWriter.write("UNA:+.?'\n");
+                                    myWriter.write("UNB+UNOC:3+"+mailPartnerText.getText()+"+OSUPPLYON+"+strTodayFull+":"+strHour+"+0000200003'\n");
+                                    lineCounter++;
+                                    myWriter.write("UNH+1+ORDERS:D:99B:UN'\n");
+                                    lineCounter++;
+                                    myWriter.write("BGM+220:1::Purchase Orders SupplyOn+"+userKuerzelText.getText()+strToday+idStartText.getText()+"+9'\n");
+                                    lineCounter++;
+                                    myWriter.write("DTM+137:"+strYesterday+":102'\n");
+                                    lineCounter++;
+                                    myWriter.write("NAD+BY+"+plantCodeText.getText()+"::92+SCMPD:Demo Buyer+Demo Buyer SA:Buyer Name2:Buyer Name3:Buyer Name4+Ludwigstrasse 49+Hallbergmoos+1A1+85399+DE'\n");
+                                    lineCounter++;
+                                    myWriter.write("NAD+SU+"+sellerNoText.getText()+"::92++Demo Seller GmbH:Supplier Name2:Supplier Name3:Supplier Name4+Kastanienweg 12+Bremen+1A1+45678+DE'\n");
+                                    lineCounter++;
+                                    myWriter.write("NAD+CN+"+plantCodeText.getText()+"::92+OBLE:Demo Buyer+Plant 2:Consignee Name2:Consignee Name3:Consignee Name4+Burgweg 341+Hamburg++20095+DE'\n");
+                                    lineCounter++;
+                                    myWriter.write("LOC+11+"+unloadingPointText.getText()+"'\n");
+                                    lineCounter++;
+                                    for (int count= 1; count <= posCount; count++){
+                                        myWriter.write("LIN+"+count+"++A "+strToday+counterStr+":IN'\n");
+                                        lineCounter++;
+                                        myWriter.write("IMD+F+1+:::A "+strToday+counterStr+" Descr. Cust'\n");
+                                        lineCounter++;
+                                        myWriter.write("QTY+113:"+bestellmengeText.getText()+":EA'\n");
+                                        lineCounter++;
+                                        myWriter.write("ALI+FR++S+"+antwortText.getText()+"+"+rechnungText.getText()+"+Y+N'\n");
+                                        lineCounter++;
+                                        myWriter.write("ALI++S+"+lieferungText.getText()+"'\n");
+                                        lineCounter++;
+                                        myWriter.write("DTM+2:"+strTomorrow+":102'\n");
+                                        lineCounter++;
+                                        myWriter.write("MOA+203:1:"+waehrungText.getText()+"'\n");
+                                        lineCounter++;
+                                        myWriter.write("MOA+128:2:"+waehrungText.getText()+"'\n");
+                                        lineCounter++;
+                                        myWriter.write("PRI+AAA:120:::100:"+unitOfMeasureText.getText()+"'\n");
+                                        lineCounter++;
+                                        myWriter.write("CUX+2:"+waehrungText.getText()+"'\n");
+                                        lineCounter++;
+                                        myWriter.write("SCC+1'\n");
+                                        lineCounter++;
+                                        myWriter.write("QTY+113:"+bestellmengeText.getText()+":EA'\n");
+                                        lineCounter++;
+                                        myWriter.write("DTM+2:"+strTomorrow+":102'\n");
+                                        lineCounter++;
+                                    }
+                                    myWriter.write("UNS+D'\n");
+                                    lineCounter++;
+                                    myWriter.write("MOA+79:1:"+waehrungText.getText()+"'\n");
+                                    lineCounter++;
+                                    myWriter.write("MOA+116:2:"+waehrungText.getText()+"'\n");
+                                    lineCounter++;
+                                    myWriter.write("UNT+"+lineCounter+"+1'\n");
+                                    myWriter.write("UNZ+1+14'\n");
                                     myWriter.close();
+                                    lineCounter = 0;
                                     System.out.println("Successfully wrote to the file.");
                                 } catch (IOException ioe) {
                                     System.out.println("An error occurred.");
