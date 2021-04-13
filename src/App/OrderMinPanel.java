@@ -33,7 +33,7 @@ public class OrderMinPanel extends JPanel {
     JLabel sellerNo = new JLabel("Sellerno.:");
     JLabel plantCode = new JLabel("Werkscode");
     JLabel unloadingPoint = new JLabel("Abladestelle");
-    JLabel unitOfMeasure = new JLabel("Maßeinheit(EA / KGM / MTR)");
+    JLabel unitOfMeasure = new JLabel("Maßeinheit(EA / PCE / KGM / MTR)");
     JLabel dateiCount = new JLabel("Anzahl Dateien");
     JLabel positionenCount = new JLabel("Anzahl Positionen:");
     JLabel bestellmenge = new JLabel("Bestellmenge/Position:");
@@ -67,7 +67,7 @@ public class OrderMinPanel extends JPanel {
 
 
     public void enableUOMButton(){
-        if (unitOfMeasureText.getText().equals("EA") || unitOfMeasureText.getText().equals("KGM") || unitOfMeasureText.getText().equals("MTR"))
+        if (unitOfMeasureText.getText().equals("EA") || unitOfMeasureText.getText().equals("KGM") || unitOfMeasureText.getText().equals("MTR") || unitOfMeasureText.getText().equals("PCE"))
         {
             erstellen.setEnabled(true);
         }
@@ -321,7 +321,7 @@ public class OrderMinPanel extends JPanel {
                                         lineCounter++;
                                         myWriter.write("IMD+F+1+:::A "+strToday+counterStr+" Descr. Cust'\n");
                                         lineCounter++;
-                                        myWriter.write("QTY+113:"+bestellmengeText.getText()+":EA'\n");
+                                        myWriter.write("QTY+113:"+bestellmengeText.getText()+":"+unitOfMeasureText.getText()+"'");
                                         lineCounter++;
                                         myWriter.write("ALI+FR++S+"+antwortText.getText()+"+"+rechnungText.getText()+"+Y+N'\n");
                                         lineCounter++;
@@ -339,7 +339,7 @@ public class OrderMinPanel extends JPanel {
                                         lineCounter++;
                                         myWriter.write("SCC+1'\n");
                                         lineCounter++;
-                                        myWriter.write("QTY+113:"+bestellmengeText.getText()+":EA'\n");
+                                        myWriter.write("QTY+113:"+bestellmengeText.getText()+":"+unitOfMeasureText.getText()+"'\n");
                                         lineCounter++;
                                         myWriter.write("DTM+2:"+strTomorrow+":102'\n");
                                         lineCounter++;

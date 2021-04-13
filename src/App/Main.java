@@ -18,11 +18,13 @@ public class Main {
         main.setVisible(true);
 
         ImageIcon logo = new ImageIcon("SupplyOn Logo.png"); //create Image icon
-        main.setIconImage(logo.getImage()); //change Icon of Main
+        frame.setIconImage(logo.getImage()); //change Icon of Main
         main.getContentPane().setBackground(Color.lightGray); //(new Color(r,g,b)) */
 
      //Erstellt das Fenster, in dem das Programm gezeigt wird
      Frame frame = new Frame();
+        ImageIcon logo = new ImageIcon("SupplyOn Logo.png"); //create Image icon
+        frame.setIconImage(logo.getImage()); //change Icon of Main
      //Windowlistener nötig für die Suche des Ablageordners im System
         frame.addWindowListener(
                 new WindowAdapter() {
