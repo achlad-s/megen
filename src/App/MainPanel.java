@@ -9,8 +9,10 @@ public class MainPanel extends JPanel {
 
     JButton minimalOrder = new JButton();
     JButton maximalOrder = new JButton();
-    JButton test = new JButton("Test");
-    GridBagLayout gbl = new GridBagLayout();
+    JPanel main;
+    JPanel container;
+    BorderLayout bl = new BorderLayout();
+    
 
 
 
@@ -18,24 +20,37 @@ public class MainPanel extends JPanel {
 
     public MainPanel (){
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        this.setLayout(bl);
 
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridy = 0;
-        gbc.weighty = 1;
+        container = new JPanel();
+        GridBagLayout gbl = new GridBagLayout();
+        container.setLayout(gbl);
+        container.setBackground(Color.lightGray);
 
-        this.setLayout(gbl);
+        //Tooltip für Buttons und Grundgerüst des Hauptbildschirms
+        main = new JPanel();
+        main.setBackground(Color.lightGray);
+        GroupLayout gl = new GroupLayout(main);
+        gl.setAutoCreateGaps(true);
+        gl.setAutoCreateContainerGaps(true);
+        this.add(container, BorderLayout.CENTER);
+        container.add(main);
+        main.add(minimalOrder);
+        main.add(maximalOrder);
         minimalOrder.setText("Minimalorder erstellen");
+        minimalOrder.setToolTipText("Order mir ausschließlich Pflichtfeldern");
         maximalOrder.setText("Maximalorder erstellen");
+        maximalOrder.setToolTipText("Order bei der auch alle optionalen Felder befüllt sind.");
 
-        this.add(minimalOrder, gbc);
+        gl.setHorizontalGroup(gl.createSequentialGroup()
+                .addComponent(minimalOrder)
+                .addComponent(maximalOrder));
 
-        gbc.gridy = 1;
-        gbc.weighty = 0.1;
-
-        this.add(maximalOrder, gbc);
-
-
+        gl.setVerticalGroup(gl.createSequentialGroup()
+                .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(minimalOrder))
+                .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(maximalOrder)));
 
         this.setBackground(Color.lightGray);
 

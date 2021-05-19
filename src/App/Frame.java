@@ -28,6 +28,7 @@ public class Frame extends JFrame{
         this.setIconImage(logo.getImage()); //Ändere das Icon zum SupplyOnLogo
         this.getContentPane().setBackground(Color.lightGray); //(new Color(r,g,b))
 
+        //Actionlistener für das durchswitchen des Cardlayouts.
 
         mainPanel.minimalOrder.addActionListener(new ActionListener() {
             @Override

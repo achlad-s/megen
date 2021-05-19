@@ -22,11 +22,12 @@ public class OrderMinPanel extends JPanel {
     int fail = 0;
     int lineCounter = 0;
 
+    // Initialisierung der Buttons, Label und Textfelder
     JButton zurueck = new JButton();
     JButton erstellen = new JButton();
     JButton ordnerSuchen = new JButton();
     JLabel ordnerText = new JLabel();
-    JLabel speicherplatzSuche = new JLabel();
+    JTextField speicherplatzSuche = new JTextField();
     JLabel userKuerzel = new JLabel("Userkürzel:");
     JLabel orgCode = new JLabel("OrgCode:");
     JLabel mailPartner = new JLabel("Mailpartner:");
@@ -40,7 +41,7 @@ public class OrderMinPanel extends JPanel {
     JLabel waehrung = new JLabel("Währung:");
     JLabel lieferung = new JLabel("Lieferung(DN / DY / BK / SC)");
     JLabel rechnung = new JLabel("Rechnung(Y / N):");
-    JLabel antwort = new JLabel("Bestellantwort (y / N):");
+    JLabel antwort = new JLabel("Bestellantwort (Y / N):");
     JLabel idStart = new JLabel("Startnummer");
     JLabel emptyLabel =new JLabel("");
     JPanel back;
@@ -66,6 +67,7 @@ public class OrderMinPanel extends JPanel {
     JTextField idStartText = new JTextField("1");
 
 
+    //Plausicheck der Textfelder
     public void enableUOMButton(){
         if (unitOfMeasureText.getText().equals("EA") || unitOfMeasureText.getText().equals("KGM") || unitOfMeasureText.getText().equals("MTR") || unitOfMeasureText.getText().equals("PCE"))
         {
@@ -109,7 +111,7 @@ public class OrderMinPanel extends JPanel {
 
     public OrderMinPanel() {
 
-        //Wichtig für die eindeutige Dateibenennung
+        //Wichtig für die eindeutige Dateibenennung und -befüllung.
         // Erstellt Datum heute, gestern und morgen. Erstellt aktuelle Uhrzeit minutengenau.
         Instant today =  Instant.now();
         Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
@@ -129,13 +131,14 @@ public class OrderMinPanel extends JPanel {
 
         String strHour = hour.format(today);
 
+        // Actionlistener zur Ordnersuche; Ablage der Dateien
         ordnerSuchen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chooser.setCurrentDirectory(new java.io.File("."));
                 chooser.setDialogTitle(choosertitle);
                 chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                chooser.setAcceptAllFileFilterUsed(false); // Schalltet "Alle Ordner" Option ab
+                chooser.setAcceptAllFileFilterUsed(false); // Schaltet "Alle Ordner" Option ab
 
                 if (chooser.showOpenDialog(ordnerSuchen) == JFileChooser.APPROVE_OPTION) {
                     sp = chooser.getSelectedFile().toString();
@@ -152,20 +155,26 @@ public class OrderMinPanel extends JPanel {
             }
         });
 
+        //Ordnertext soll fett gedruckt werden
         Font newLabelFont=new Font(ordnerText.getFont().getName(),Font.BOLD,ordnerText.getFont().getSize());
         ordnerText.setText("Zielordner:");
         ordnerText.setFont(newLabelFont);
         ordnerSuchen.setText("Suchen");
+        ordnerSuchen.setToolTipText("Ordner zur Speicherung suchen");
 
+        //Layout für das Containerpanel
         mainContainer = new JPanel();
         GridBagLayout gbl = new GridBagLayout();
         mainContainer.setLayout(gbl);
         mainContainer.setBackground(Color.lightGray);
 
+        //Mainpanel erhält Grouplayout und ihm werden alle Labels, Buttons und Textfelder hinzugefügt
+        //Mainpanel wird dem Maincontainer hinzugefügt.
         main = new JPanel();
         GroupLayout group = new GroupLayout(main);
         group.setAutoCreateGaps(true);
         group.setAutoCreateContainerGaps(true);
+        mainContainer.add(main);
         main.setLayout(group);
         main.add(erstellen);
         main.add(ordnerSuchen);
@@ -208,6 +217,7 @@ public class OrderMinPanel extends JPanel {
         erstellen.setText("Minimalorder(s) erstellen");
 
 
+        //Liveupdate des Suchen-Buttons durch den Plausicheck
         unitOfMeasureText.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -277,7 +287,7 @@ public class OrderMinPanel extends JPanel {
         });
 
 
-
+        //Actionlistener für die Erstellung der EDIFACT Nachrichten, bzw. der EDI-Dateien, bzw. der EDI-Dateien bei Klick auf Erstellen-Button
         erstellen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -291,7 +301,6 @@ public class OrderMinPanel extends JPanel {
                     for (int counter = id; counter <= ordNumberEnd; counter++ ){
                         String counterStr = String.valueOf(counter);
                         File myObj = new File(sp+"\\SO_ORDERS_"+userKuerzelText.getText()+strToday+counterStr+"_"+strTodayFull+".edi");
-                        String path = myObj.getPath();
                         System.out.println("Speicherort: "+myObj.getAbsolutePath());
                         try {
                             if (myObj.createNewFile()) {
@@ -366,6 +375,9 @@ public class OrderMinPanel extends JPanel {
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         } }
+
+                        // Popupnachricht wie viele Dateien erstellt wurden und anschließend zurücksetzen der Counter.
+
                         JOptionPane.showMessageDialog(null, "Es wurde(n) "+success+" Nachricht(en) erstellt! " +fail+ " Nachricht(en) wurde(n) nicht erstellt!", "Abgeschlossen", JOptionPane.INFORMATION_MESSAGE);
                         idStartText.setText(String.valueOf(neueId));
                         success = 0;
@@ -377,6 +389,8 @@ public class OrderMinPanel extends JPanel {
                         }
             }
         });
+        //Einordnung der Labels, Buttons und Textfelder in das Raster des Grouplayouts.
+        //emptyLabel nötig, da ohne das Grouplayout verzogen wird
         group.setHorizontalGroup(group.createSequentialGroup()
                 .addComponent(emptyLabel)
                 .addGroup(group.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -475,8 +489,7 @@ public class OrderMinPanel extends JPanel {
 
         );
 
-        main.setForeground(Color.green);
-        mainContainer.add(main);
+        // Neues Panel für den Zurück-Button. Wird im Bild unten angesiedelt
 
         back = new JPanel();
         back.setBackground(Color.black);
@@ -484,7 +497,8 @@ public class OrderMinPanel extends JPanel {
         back.add(zurueck);
         back.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        this.setBackground(Color.blue);
+        // Das große Hauptpanel erhält Layout und die relevanten Panels
+
         this.setLayout(new BorderLayout());
         this.add(back, BorderLayout.SOUTH);
         this.add(mainContainer, BorderLayout.CENTER);

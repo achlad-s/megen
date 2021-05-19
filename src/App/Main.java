@@ -25,7 +25,7 @@ public class Main {
      Frame frame = new Frame();
         ImageIcon logo = new ImageIcon("SupplyOn Logo.png"); //create Image icon
         frame.setIconImage(logo.getImage()); //change Icon of Main
-     //Windowlistener nötig für die Suche des Ablageordners im System
+     //Windowlistener nötig für die Suche des Ablageordners im System. Das erstellt das Fenster für die Ordnersuche.
         frame.addWindowListener(
                 new WindowAdapter() {
                     public void windowClosing(WindowEvent e) {

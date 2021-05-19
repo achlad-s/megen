@@ -24,11 +24,12 @@ public class OrderMaxPanel extends JPanel {
     int fail = 0;
     int lineCounter = 0;
 
+    // Initialisierung der Buttons, Label und Textfelder
     JButton zurueck = new JButton();
     JButton erstellen = new JButton();
     JButton ordnerSuchen = new JButton();
     JLabel ordnerText = new JLabel();
-    JLabel speicherplatzSuche = new JLabel();
+    JTextField speicherplatzSuche = new JTextField();
     JLabel userKuerzel = new JLabel("Userkürzel:");
     JLabel orgCode = new JLabel("OrgCode:");
     JLabel mailPartner = new JLabel("Mailpartner:");
@@ -42,7 +43,7 @@ public class OrderMaxPanel extends JPanel {
     JLabel waehrung = new JLabel("Währung:");
     JLabel lieferung = new JLabel("Lieferung(DN / DY / BK / SC)");
     JLabel rechnung = new JLabel("Rechnung(Y / N):");
-    JLabel antwort = new JLabel("Bestellantwort (y / N):");
+    JLabel antwort = new JLabel("Bestellantwort (Y / N):");
     JLabel idStart = new JLabel("Startnummer");
     JLabel emptyLabel =new JLabel("");
     JPanel back;
@@ -68,6 +69,7 @@ public class OrderMaxPanel extends JPanel {
     JTextField idStartText = new JTextField("1");
 
 
+    //Plausicheck der Textfelder
     public void enableUOMButton(){
         if (unitOfMeasureText.getText().equals("EA") || unitOfMeasureText.getText().equals("KGM") || unitOfMeasureText.getText().equals("MTR") || unitOfMeasureText.getText().equals("PCE"))
         {
@@ -113,6 +115,7 @@ public class OrderMaxPanel extends JPanel {
 
         //Wichtig für die eindeutige Dateibenennung
         // Erstellt Datum heute, gestern und morgen. Erstellt aktuelle Uhrzeit minutengenau.
+        // Wird erweitert durch einige weitere Ordermax spezifische Informationen.
         Instant today =  Instant.now();
         Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
         Instant tomorrow = Instant.now().plus(1, ChronoUnit.DAYS);
@@ -147,6 +150,7 @@ public class OrderMaxPanel extends JPanel {
 
         String strHour = hour.format(today);
 
+        // Actionlistener zur Ordnersuche; Ablage der Dateien
         ordnerSuchen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -170,16 +174,23 @@ public class OrderMaxPanel extends JPanel {
             }
         });
 
+
+        //Ordnertext soll fett gedruckt werden
         Font newLabelFont=new Font(ordnerText.getFont().getName(),Font.BOLD,ordnerText.getFont().getSize());
         ordnerText.setText("Zielordner:");
         ordnerText.setFont(newLabelFont);
         ordnerSuchen.setText("Suchen");
+        ordnerSuchen.setToolTipText("Ordner zur Speicherung suchen");
 
+        //Layout für das Containerpanel
         mainContainer = new JPanel();
         GridBagLayout gbl = new GridBagLayout();
         mainContainer.setLayout(gbl);
         mainContainer.setBackground(Color.lightGray);
 
+        //Mainpanel erhält Grouplayout und ihm werden alle Labels, Buttons und Textfelder hinzugefügt
+        //Mainpanel wird dem Maincontainer hinzugefügt.
+        mainContainer.add(main);
         main = new JPanel();
         GroupLayout group = new GroupLayout(main);
         group.setAutoCreateGaps(true);
@@ -226,6 +237,7 @@ public class OrderMaxPanel extends JPanel {
         erstellen.setText("Maximalorder(s) erstellen");
 
 
+        //Liveupdate des Suchen-Buttons durch den Plausicheck
         unitOfMeasureText.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -294,7 +306,7 @@ public class OrderMaxPanel extends JPanel {
             }
         });
 
-        //Dateien werden erstellt und befüllt
+        //Actionlistener für die Erstellung der EDIFACT Nachrichten, bzw. der EDI-Dateien bei Klick auf Erstellen-Button
         erstellen.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -309,7 +321,6 @@ public class OrderMaxPanel extends JPanel {
                         String counterStr = String.valueOf(counter);
                         // Datei erstellen
                         File myObj = new File(sp+"\\SO_ORDERS_"+userKuerzelText.getText()+strToday+counterStr+"_"+strTodayFull+".edi");
-                        String path = myObj.getPath();
                         System.out.println("Speicherort: "+myObj.getAbsolutePath());
                         try {
                             if (myObj.createNewFile()) {
@@ -331,7 +342,7 @@ public class OrderMaxPanel extends JPanel {
                                     lineCounter++;
                                     myWriter.write("DTM+36:"+strFutTwo+":102'\n");
                                     lineCounter++;
-                                    myWriter.write("DTM+XXX:"+strFutFull+":102'\n");
+                                    myWriter.write("DTM+XXX:"+strFutFull+":203'\n");
                                     lineCounter++;
                                     myWriter.write("ALI+++1+2+3+4+5'\n");
                                     lineCounter++;
@@ -404,8 +415,6 @@ public class OrderMaxPanel extends JPanel {
                                     myWriter.write("RFF+ARB:006005004'\n");
                                     lineCounter++;
                                     myWriter.write("CTA+DL+Purchasing Departement:Konrad Meier'\n");
-                                    lineCounter++;
-                                    myWriter.write("CTA+DL+SUCT 001:Eberhard Mueller'\n");
                                     lineCounter++;
                                     myWriter.write("COM+040195588784:TE'\n");
                                     lineCounter++;
@@ -481,6 +490,8 @@ public class OrderMaxPanel extends JPanel {
                                     lineCounter++;
                                     for (int count= 1; count <= posCount; count++){
                                         myWriter.write("LIN+"+count+"++A "+strToday+counterStr+":IN'\n");
+                                        lineCounter++;
+                                        myWriter.write("PIA+5+001SA:SA+12/02:EC+123450021:CV' \n");
                                         lineCounter++;
                                         myWriter.write("IMD+F+1+:::A "+strToday+counterStr+" Descr. Cust:A "+strToday+counterStr+" Descr. S'\n");
                                         lineCounter++;
@@ -716,11 +727,14 @@ public class OrderMaxPanel extends JPanel {
                                 }
                             } else {
                                 fail++;
-                                System.out.println("Faaaaaail.");
+                                System.out.println("Fail.");
                             }
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         } }
+
+                    // Popupnachricht wie viele Dateien erstellt wurden und anschließend zurücksetzen der Counter.
+
                     JOptionPane.showMessageDialog(null, "Es wurde(n) "+success+" Nachricht(en) erstellt! " +fail+ " Nachricht(en) wurde(n) nicht erstellt!", "Abgeschlossen", JOptionPane.INFORMATION_MESSAGE);
                     idStartText.setText(String.valueOf(neueId));
                     success = 0;
@@ -830,8 +844,8 @@ public class OrderMaxPanel extends JPanel {
 
         );
 
-        main.setForeground(Color.green);
-        mainContainer.add(main);
+
+        // Neues Panel für den Zurück-Button. Wird im Bild unten angesiedelt
 
         back = new JPanel();
         back.setBackground(Color.black);
@@ -839,7 +853,8 @@ public class OrderMaxPanel extends JPanel {
         back.add(zurueck);
         back.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        this.setBackground(Color.blue);
+        // Das große Hauptpanel erhält Layout und die relevanten Panels
+
         this.setLayout(new BorderLayout());
         this.add(back, BorderLayout.SOUTH);
         this.add(mainContainer, BorderLayout.CENTER);
