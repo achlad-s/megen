@@ -190,12 +190,14 @@ public class OrderMaxPanel extends JPanel {
 
         //Mainpanel erhält Grouplayout und ihm werden alle Labels, Buttons und Textfelder hinzugefügt
         //Mainpanel wird dem Maincontainer hinzugefügt.
-        mainContainer.add(main);
+
         main = new JPanel();
+
         GroupLayout group = new GroupLayout(main);
         group.setAutoCreateGaps(true);
         group.setAutoCreateContainerGaps(true);
         main.setLayout(group);
+        mainContainer.add(main);
         main.add(erstellen);
         main.add(ordnerSuchen);
         main.add(ordnerText);
@@ -846,6 +848,7 @@ public class OrderMaxPanel extends JPanel {
 
 
         // Neues Panel für den Zurück-Button. Wird im Bild unten angesiedelt
+
 
         back = new JPanel();
         back.setBackground(Color.black);
