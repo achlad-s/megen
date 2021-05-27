@@ -38,7 +38,7 @@ public class MainPanel extends JPanel {
         main.add(minimalOrder);
         main.add(maximalOrder);
         minimalOrder.setText("Minimalorder erstellen");
-        minimalOrder.setToolTipText("Order mir ausschließlich Pflichtfeldern");
+        minimalOrder.setToolTipText("Order mit ausschließlich Pflichtfeldern");
         maximalOrder.setText("Maximalorder erstellen");
         maximalOrder.setToolTipText("Order bei der auch alle optionalen Felder befüllt sind.");
 
